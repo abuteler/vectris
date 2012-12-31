@@ -1,0 +1,67 @@
+body {
+    font-family: courier;
+}
+h1 {
+    text-align: center;
+    font-size: 24px;
+    color: red;
+}
+section {
+    display: none;
+}
+
+/* Splash + Main menu */
+#splash nav {
+    width: 300px;
+    margin: auto;
+}
+#main-menu {
+    width: 200px;
+}
+#main-menu li {
+    text-align: center;
+    list-style: none;
+    border: 1px #38B2D8 solid;
+    background-color: #B6B6DB;
+    margin: 5px;
+}
+#main-menu li.hover {
+    color: white;
+    background-color: #6A6A7A;
+    cursor: pointer;
+}
+/*-----*/
+
+/* Game + In game menu */
+#game nav {
+    width: 300px;
+    margin: auto;
+}
+#in-game-menu {
+    width: 200px;
+    margin: 0px;
+    padding: 0px;
+}
+#in-game-menu li {
+    text-align: left;
+    list-style: none;
+    border: 0px;
+    /*background-color: #F0FFF0;*/
+    margin: 5px;
+    display: inline-block;
+}
+#in-game-menu li.hover {
+    color: red;
+    cursor: pointer;
+}
+
+#game canvas {
+    border: 1px solid blue;
+    margin: auto;
+    display: block;
+}
+/*-----*/
+
+footer {
+    font-size: 12px;
+}
