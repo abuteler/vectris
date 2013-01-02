@@ -3,15 +3,15 @@ body {
 }
 h1 {
     text-align: center;
-    font-size: 24px;
-    color: red;
+    font-size: 26px;
+    color: purple;
 }
 section {
     display: none;
 }
 
-/* Splash + Main menu */
-#splash nav {
+/* main + Main menu */
+#main nav {
     width: 300px;
     margin: auto;
 }
@@ -64,4 +64,7 @@ section {
 
 footer {
     font-size: 12px;
+    text-align: center;
+    position: relative;
+    top:70px;
 }

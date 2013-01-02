@@ -72,13 +72,18 @@ var vectris = {
         }
     },
     init: function() {
+        var section = (window.location.toString().indexOf('?') === -1) ? 'main' : 'game';
         //initialize canvas
         this.initGameCanvas();
         //initialize menus
         this.initMainMenu();
         this.initInGameMenu();
         //show starting section
-        $('#splash').show();
+        $('#'+section).show();
+
+        //dev mode: skip the menu
+        if (section === 'game')
+            vectris.play();
     },
     initMainMenu: function() {
         var self = this;
@@ -91,7 +96,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-play').click(function() {
-            $('#splash').hide();
+            $('#main').hide();
             $('#game').show();
             self.play();
         });
@@ -108,7 +113,7 @@ var vectris = {
         $('#btn-quit').click(function() {
             $(document).unbind('keydown'); //@2do: get this into a method unbindControls()
             $('#game').hide();
-            $('#splash').show();
+            $('#main').show();
         });
     },
     initGameCanvas: function() {
@@ -117,7 +122,7 @@ var vectris = {
         canvas.height = this.grid.getCanvasHeight();
     },
     createBlock: function() {
-        var shape = Math.floor(Math.random()),
+        var shape = Math.round(Math.random()),
             grid = this.grid,
             startAtX = (grid.widthInSquares/2 - 1),
             block = {
@@ -169,21 +174,26 @@ var vectris = {
                 block.color = 'rgb(0,200,0)'
                 break;
         }
-        if(this.collides(block)) throw 'oh noes!';
+        if (this.collides(block)) throw 'oh noes!';
 
         return block;
     },
-    collides: function(block) {
+    collides: function(block, onNextDown) {
         //checks whether the block collides with stuff already in the matrix
-        //@2do: evaluate borders and floor!
-        var self = this;
+        var result = false,
+            modifier = (onNextDown) ? 1 : 0;
         $.each(block.squares, function(key, square) {
-            if(self.grid.theMatrix[square.y][square.x].occupied) {
-                block.grounded = true;
-                return true;
+            if(vectris.grid.theMatrix[square.y + modifier][square.x].occupied) {
+                result = true;
             }
         });
-        return false;
+        return result;
+    },
+    getGroundStatus: function (block) {
+        if (block.squares[3].y === vectris.grid.heightInSquares-1 || vectris.collides(block, true)) {
+            //I use the fourth square here because it's the lowest possible square
+            block.grounded = true;
+        }
     },
     move: {
         left: function(block) {
@@ -209,9 +219,12 @@ var vectris = {
             }
         },
         down: function(block) {
-            $.each(block.squares, function(key, square) {
-                square.y++;
-            });
+            if (!block.grounded) {
+                $.each(block.squares, function(key, square) {
+                    square.y++;
+                });
+                vectris.getGroundStatus(block);
+            }
         },
         drop: function(block) {
             console.log('drop!');
@@ -287,15 +300,13 @@ var vectris = {
                     vectris.move.down(newBlock);
                     break;
             }
-            /* OBSOLETE
-            if(self.collides(newBlock)) {
-                self.grid.updateTheMatrix(newBlock); //@do: -1y
-                console.log(self.grid.theMatrix);
-                floored = true;
-            }*/
             vectris.grid.renderTheMatrix(newBlock);
+            if (newBlock.grounded) {
+                vectris.grid.updateTheMatrix(newBlock);
+                newBlock = vectris.createBlock();
+                console.log(vectris.grid.theMatrix);
+            }
         });
-        console.log(vectris.grid.theMatrix);
     },
     gameOverStuff: function() {
         console.error('Game Over!');
