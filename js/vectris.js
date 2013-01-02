@@ -106,6 +106,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-quit').click(function() {
+            $(document).unbind('keydown'); //@2do: get this into a method unbindControls()
             $('#game').hide();
             $('#splash').show();
         });
@@ -118,7 +119,7 @@ var vectris = {
     createBlock: function() {
         var shape = Math.floor(Math.random()),
             grid = this.grid,
-            startAtX = (grid.widthInSquares / 2 - 1),
+            startAtX = (grid.widthInSquares/2 - 1),
             block = {
                 squares: [],
                 color: undefined,
@@ -184,9 +185,13 @@ var vectris = {
     },
     move: {
         left: function(block) {
-            $.each(block.squares, function(key, square) {
+            var aux = $.extend(true, {}, block);
+            $.each(aux.squares, function(key, square) {
                 square.x--;
             });
+            if (aux.squares[0].x >= 0) {
+                block = $.extend(true, block, aux);
+            }
         },
         right: function(block) {
             $.each(block.squares, function(key, square) {
@@ -254,6 +259,9 @@ var vectris = {
             eventObj.preventDefault();
             console.log(eventObj);
             switch(eventObj.which) {
+                case 27: //escape
+                    $(document).unbind('keydown');
+                    break;
                 case 32: //space bar
                     self.move.drop(newBlock);
                     break;
