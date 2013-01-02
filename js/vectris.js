@@ -123,6 +123,8 @@ var vectris = {
             block = {
                 squares: [],
                 color: undefined,
+                leftest: false,
+                rightest: false,
                 grounded: false
             };
         switch(shape) {
@@ -185,18 +187,26 @@ var vectris = {
     },
     move: {
         left: function(block) {
-            var aux = $.extend(true, {}, block);
-            $.each(aux.squares, function(key, square) {
-                square.x--;
-            });
-            if (aux.squares[0].x >= 0) {
-                block = $.extend(true, block, aux);
+            if (!block.leftest){
+                $.each(block.squares, function(key, square) {
+                    square.x--;
+                });
+                if (block.squares[0].x === 0) {
+                    block.leftest = true;
+                }
+                block.rightest = false;
             }
         },
         right: function(block) {
-            $.each(block.squares, function(key, square) {
-                square.x++;
-            });
+            if (!block.rightest){
+                $.each(block.squares, function(key, square) {
+                    square.x++;
+                });
+                if (block.squares[1].x === vectris.grid.widthInSquares-1) {
+                    block.rightest = true;
+                }
+                block.leftest = false;
+            }
         },
         down: function(block) {
             $.each(block.squares, function(key, square) {
@@ -211,13 +221,12 @@ var vectris = {
         }
     },
     play: function() {
-        var self = this,
-            newBlock = {},
+        var newBlock = {},
             gameOver = false,
             floored = false,
             chronos = undefined;
         //initialize game matrix
-        this.grid.initializeTheMatrix();
+        vectris.grid.initializeTheMatrix();
         //rock and roll!
         /* MUST RETHINK
         while (!gameOver){
@@ -252,30 +261,30 @@ var vectris = {
          }
       }*/
 
-        newBlock = this.createBlock();
-        self.grid.renderTheMatrix(newBlock);
+        newBlock = vectris.createBlock();
+        vectris.grid.renderTheMatrix(newBlock);
         //initialize controls
         $(document).keydown(function(eventObj) {
             eventObj.preventDefault();
-            console.log(eventObj);
+            // console.log(eventObj);
             switch(eventObj.which) {
                 case 27: //escape
                     $(document).unbind('keydown');
                     break;
                 case 32: //space bar
-                    self.move.drop(newBlock);
+                    vectris.move.drop(newBlock);
                     break;
                 case 37: //left arrow
-                    self.move.left(newBlock);
+                    vectris.move.left(newBlock);
                     break;
                 case 38: //up arrow
-                    self.move.rotate(newBlock);
+                    vectris.move.rotate(newBlock);
                     break;
                 case 39: //right arrow
-                    self.move.right(newBlock);
+                    vectris.move.right(newBlock);
                     break;
                 case 40: //down arrow
-                    self.move.down(newBlock);
+                    vectris.move.down(newBlock);
                     break;
             }
             /* OBSOLETE
@@ -284,9 +293,9 @@ var vectris = {
                 console.log(self.grid.theMatrix);
                 floored = true;
             }*/
-            self.grid.renderTheMatrix(newBlock);
+            vectris.grid.renderTheMatrix(newBlock);
         });
-        console.log(self.grid.theMatrix);
+        console.log(vectris.grid.theMatrix);
     },
     gameOverStuff: function() {
         console.error('Game Over!');
