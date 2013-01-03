@@ -21,7 +21,7 @@ var vectris = {
                 for(var j = 0; j < this.widthInSquares; j++) {
                     row.push({
                         occupied: false,
-                        color: undefined
+                        color: null
                     });
                 }
                 this.theMatrix.push(row);
@@ -39,9 +39,9 @@ var vectris = {
             var self = this,
                 canvas = $('#game canvas')[0],
                 ctx = null,
-                squareSize = this.squaresLength
-                startAtX = undefined,
-                startAtY = undefined;
+                startAtX = null,
+                startAtY = null,
+                squareSize = this.squaresLength;
 
             if(!canvas.getContext) {
                 console.error('No canvas support!');
@@ -127,7 +127,7 @@ var vectris = {
             startAtX = (grid.widthInSquares/2 - 1),
             block = {
                 squares: [],
-                color: undefined,
+                color: null,
                 leftest: false,
                 rightest: false,
                 grounded: false
@@ -151,7 +151,7 @@ var vectris = {
                     x: startAtX + 1,
                     y: 1
                 });
-                block.color = 'rgb(200,0,200)'
+                block.color = 'rgb(200,0,200)';
                 break;
             case 1:
                 //column
@@ -171,7 +171,7 @@ var vectris = {
                     x: startAtX,
                     y: 3
                 });
-                block.color = 'rgb(0,200,0)'
+                block.color = 'rgb(0,200,0)';
                 break;
         }
         if (this.collides(block)) throw 'oh noes!';
@@ -237,7 +237,7 @@ var vectris = {
         var newBlock = {},
             gameOver = false,
             floored = false,
-            chronos = undefined;
+            chronos = null;
         //initialize game matrix
         vectris.grid.initializeTheMatrix();
         //rock and roll!
@@ -312,9 +312,9 @@ var vectris = {
     gameOverStuff: function() {
         console.error('Game Over!');
     }
-}
+};
 
 
 $(document).ready(function() {
     vectris.init();
-})
+});
