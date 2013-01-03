@@ -16,6 +16,7 @@ var vectris = {
         },
         initializeTheMatrix: function() {
             var row = [];
+            vectris.grid.theMatrix = [];
             for(var i = 0; i < this.heightInSquares; i++) {
                 for(var j = 0; j < this.widthInSquares; j++) {
                     row.push({
@@ -86,7 +87,6 @@ var vectris = {
             vectris.play();
     },
     initMainMenu: function() {
-        var self = this;
         //set hover behaviour
         $('#main-menu li').mouseover(function() {
             $(this).toggleClass('hover');
@@ -98,7 +98,7 @@ var vectris = {
         $('#btn-play').click(function() {
             $('#main').hide();
             $('#game').show();
-            self.play();
+            vectris.play();
         });
     },
     initInGameMenu: function() {
@@ -241,6 +241,7 @@ var vectris = {
         //initialize game matrix
         vectris.grid.initializeTheMatrix();
         //rock and roll!
+
         /* MUST RETHINK
         while (!gameOver){
          try {
