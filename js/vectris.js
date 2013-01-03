@@ -122,7 +122,7 @@ var vectris = {
         canvas.height = this.grid.getCanvasHeight();
     },
     createBlock: function() {
-        var shape = Math.round(Math.random()),
+        var shape = Math.round(Math.random()*3),
             grid = this.grid,
             startAtX = (grid.widthInSquares/2 - 1),
             block = {
@@ -151,7 +151,7 @@ var vectris = {
                     x: startAtX + 1,
                     y: 1
                 });
-                block.color = 'rgb(200,0,200)';
+                block.color = 'rgb(150,0,160)';
                 break;
             case 1:
                 //column
@@ -171,7 +171,47 @@ var vectris = {
                     x: startAtX,
                     y: 3
                 });
-                block.color = 'rgb(0,200,0)';
+                block.color = 'rgb(0,150,0)';
+                break;
+            case 2:
+                //Left L
+                block.squares.push({
+                    x: startAtX,
+                    y: 0
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 2
+                });
+                block.squares.push({
+                    x: startAtX - 1,
+                    y: 2
+                });
+                block.color = 'rgb(0,0,150)';
+                break;
+            case 3:
+                //Right L
+                block.squares.push({
+                    x: startAtX,
+                    y: 0
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 2
+                });
+                block.squares.push({
+                    x: startAtX + 1,
+                    y: 2
+                });
+                block.color = 'rgb(210,180,0)';
                 break;
         }
         if (this.collides(block)) throw 'oh noes!';
