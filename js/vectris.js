@@ -122,7 +122,7 @@ var vectris = {
         canvas.height = this.grid.getCanvasHeight();
     },
     createBlock: function() {
-        var shape = Math.round(Math.random()*3),
+        var shape = Math.round(Math.random()*5),
             grid = this.grid,
             startAtX = (grid.widthInSquares/2 - 1),
             block = {
@@ -212,6 +212,46 @@ var vectris = {
                     y: 2
                 });
                 block.color = 'rgb(210,180,0)';
+                break;
+            case 4:
+                //Left "lightning"
+                block.squares.push({
+                    x: startAtX,
+                    y: 0
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX - 1,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX - 1,
+                    y: 2
+                });
+                block.color = 'rgb(180,0,0)';
+                break;
+            case 5:
+                //Right lightning
+                block.squares.push({
+                    x: startAtX,
+                    y: 0
+                });
+                block.squares.push({
+                    x: startAtX,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX + 1,
+                    y: 1
+                });
+                block.squares.push({
+                    x: startAtX + 1,
+                    y: 2
+                });
+                block.color = 'rgb(170,210,230)';
                 break;
         }
         if (this.collides(block)) throw 'oh noes!';
