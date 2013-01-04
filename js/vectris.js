@@ -319,25 +319,29 @@ var vectris = {
         vectris.grid.renderTheMatrix(newBlock);
         //initialize controls
         $(document).keydown(function(eventObj) {
-            eventObj.preventDefault();
-            // console.log(eventObj);
             switch(eventObj.which) {
                 case 27: //escape
+                    eventObj.preventDefault();
                     $(document).unbind('keydown');
                     break;
                 case 32: //space bar
+                    eventObj.preventDefault();
                     vectris.move.drop(newBlock);
                     break;
                 case 37: //left arrow
+                    eventObj.preventDefault();
                     vectris.move.left(newBlock);
                     break;
                 case 38: //up arrow
+                    eventObj.preventDefault();
                     vectris.move.rotate(newBlock);
                     break;
                 case 39: //right arrow
+                    eventObj.preventDefault();
                     vectris.move.right(newBlock);
                     break;
                 case 40: //down arrow
+                    eventObj.preventDefault();
                     vectris.move.down(newBlock);
                     break;
             }
