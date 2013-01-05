@@ -191,7 +191,7 @@ var vectris = {
                     x: startAtX - 1,
                     y: 2
                 });
-                block.color = 'rgb(0,0,150)';
+                block.color = 'rgb(0,0,180)';
                 break;
             case 3:
                 //Right L
@@ -280,10 +280,9 @@ var vectris = {
             if (!block.leftest){
                 $.each(block.squares, function(key, square) {
                     square.x--;
+                    if (square.x === 0)
+                        block.leftest = true;
                 });
-                if (block.squares[0].x === 0) {
-                    block.leftest = true;
-                }
                 block.rightest = false;
             }
         },
@@ -291,10 +290,9 @@ var vectris = {
             if (!block.rightest){
                 $.each(block.squares, function(key, square) {
                     square.x++;
+                    if (square.x === vectris.grid.widthInSquares-1)
+                        block.rightest = true; 
                 });
-                if (block.squares[1].x === vectris.grid.widthInSquares-1) {
-                    block.rightest = true;
-                }
                 block.leftest = false;
             }
         },
@@ -310,7 +308,23 @@ var vectris = {
             console.log('drop!');
         },
         rotate: function(block) {
-            console.log('rotate!');
+            //First I set the second square as my origin coordinates
+            var newOrigin = { x: block.squares[1].x, y: block.squares[1].y },
+                aux = null;
+            $.each(block.squares, function (key, square) {
+                square.x -= newOrigin.x;
+                square.y -= newOrigin.y;
+                //^note that square[1] will end up being (0,0)
+                //and now I do the Linear Transformation (-y, x), which rotates 90 degrees counter clockwise
+                //See http://en.wikipedia.org/wiki/Transformation_matrix#Examples_in_2D_graphics for additional reference
+                aux = square.x;
+                square.x = -square.y;
+                square.y = aux;
+                //finally, I put the block back where it was in the matrix
+                square.x += newOrigin.x;
+                square.y += newOrigin.y;
+            });
+            //@2do: collision check
         }
     },
     play: function() {
