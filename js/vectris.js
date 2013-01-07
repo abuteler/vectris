@@ -130,7 +130,8 @@ var vectris = {
                 color: null,
                 leftest: false,
                 rightest: false,
-                grounded: false
+                grounded: false,
+                frozen: false
             };
         switch(shape) {
             case 0:
@@ -254,46 +255,60 @@ var vectris = {
                 block.color = 'rgb(170,210,230)';
                 break;
         }
-        if (this.collides(block)) throw 'oh noes!';
-
+        if (vectris.antiCollisionSystem(block, 'created').collided) throw 'oh noes!';
         return block;
     },
-    collides: function(block, onNextDown) {
-        //checks whether the block collides with stuff already in the matrix
-        var result = false,
-            modifier = (onNextDown) ? 1 : 0;
+    antiCollisionSystem: function(block, movedType) {
+        //checks and sets block boundaries and collision with stuff already in the matrix
+        var result = false;
         $.each(block.squares, function(key, square) {
-            if(vectris.grid.theMatrix[square.y + modifier][square.x].occupied) {
+            if (vectris.grid.theMatrix[square.y][square.x].occupied) {
                 result = true;
             }
+            //left boundaries
+            if (square.x === 0 || vectris.grid.theMatrix[square.y][square.x - 1].occupied)
+                block.leftest = true;
+            //right boundaries
+            if (square.x === vectris.grid.widthInSquares-1 || vectris.grid.theMatrix[square.y][square.x + 1].occupied)
+                block.rightest = true;
+            //ground boundaries
+            if (square.y === vectris.grid.heightInSquares-1 || vectris.grid.theMatrix[square.y + 1][square.x].occupied) {
+                block.grounded = true;
+            /*} else  {
+                block.grounded = false;*/
+            }
+
+            switch (movedType) {
+                case 'left':
+                    block.rightest = false;
+                    break;
+                case 'right':
+                    block.leftest = false;
+                    break;
+                case 'down':
+                    break;
+                case 'rotate':
+                    //
+                    break;
+            }
         });
-        return result;
-    },
-    getGroundStatus: function (block) {
-        if (block.squares[3].y === vectris.grid.heightInSquares-1 || vectris.collides(block, true)) {
-            //I use the fourth square here because it's the lowest possible square
-            block.grounded = true;
-        }
+        return {collided: result};
     },
     move: {
         left: function(block) {
             if (!block.leftest){
                 $.each(block.squares, function(key, square) {
                     square.x--;
-                    if (square.x === 0)
-                        block.leftest = true;
                 });
-                block.rightest = false;
+                vectris.antiCollisionSystem(block, 'left');
             }
         },
         right: function(block) {
             if (!block.rightest){
                 $.each(block.squares, function(key, square) {
                     square.x++;
-                    if (square.x === vectris.grid.widthInSquares-1)
-                        block.rightest = true; 
                 });
-                block.leftest = false;
+                vectris.antiCollisionSystem(block, 'right');
             }
         },
         down: function(block) {
@@ -301,7 +316,10 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     square.y++;
                 });
-                vectris.getGroundStatus(block);
+                vectris.antiCollisionSystem(block, 'down');
+            } else {
+                //once it's grounded one next down will freeze it in place
+                block.frozen = true;
             }
         },
         drop: function(block) {
@@ -315,16 +333,18 @@ var vectris = {
                 square.x -= newOrigin.x;
                 square.y -= newOrigin.y;
                 //^note that square[1] will end up being (0,0)
-                //and now I do the Linear Transformation (-y, x), which rotates 90 degrees counter clockwise
+                //then I do the Linear Transformation (-y, x), which rotates 90 degrees counter clockwise
                 //See http://en.wikipedia.org/wiki/Transformation_matrix#Examples_in_2D_graphics for additional reference
                 aux = square.x;
                 square.x = -square.y;
                 square.y = aux;
-                //finally, I put the block back where it was in the matrix
+                //finally, I put the block back where it was in the matrix, only rotated
                 square.x += newOrigin.x;
                 square.y += newOrigin.y;
+                //now I need to check that the new coordinates haven't overflowed the matrix
+                //if they have, the anti collision system will pull the block back in
             });
-            //@2do: collision check
+            vectris.antiCollisionSystem(block, 'rotate');
         }
     },
     play: function() {
@@ -368,7 +388,7 @@ var vectris = {
             self.gameOverStuff();
          }
       }*/
-
+        
         newBlock = vectris.createBlock();
         vectris.grid.renderTheMatrix(newBlock);
         //initialize controls
@@ -400,10 +420,15 @@ var vectris = {
                     break;
             }
             vectris.grid.renderTheMatrix(newBlock);
-            if (newBlock.grounded) {
+            if (newBlock.frozen) {
                 vectris.grid.updateTheMatrix(newBlock);
-                newBlock = vectris.createBlock();
-                console.log(vectris.grid.theMatrix);
+                try {
+                    newBlock = vectris.createBlock();
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    vectris.grid.renderTheMatrix(newBlock);
+                }
             }
         });
     },
