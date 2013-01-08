@@ -255,17 +255,31 @@ var vectris = {
                 block.color = 'rgb(170,210,230)';
                 break;
         }
-        if (vectris.antiCollisionSystem(block, 'created').collided) throw 'oh noes!';
+        if (vectris.antiCollisionSystem(block).collided) throw 'oh noes!';
         return block;
     },
-    antiCollisionSystem: function(block, movedType) {
-        //checks and sets block boundaries and collision with stuff already in the matrix
+    //checks and sets block boundaries and collision with stuff already in the matrix
+    antiCollisionSystem: function(block) {
         var result = false;
+        //reset boundaries after move
+        block.leftest = false;
+        block.rightest = false;
+        block.grounded = false;
+
         $.each(block.squares, function(key, square) {
+            //check for possible overflowing in rotation and correct it it
+            if (square.x < 0) {
+                vectris.move.right(block);
+            }
+            if (square.y > vectris.grid.heightInSquares-1) {
+                vectris.move.up(block);
+            }
+
+            //check for overlapping (should only happen on creation)
             if (vectris.grid.theMatrix[square.y][square.x].occupied) {
                 result = true;
             }
-            //left boundaries
+            //check for left boundaries
             if (square.x === 0 || vectris.grid.theMatrix[square.y][square.x - 1].occupied)
                 block.leftest = true;
             //right boundaries
@@ -274,24 +288,9 @@ var vectris = {
             //ground boundaries
             if (square.y === vectris.grid.heightInSquares-1 || vectris.grid.theMatrix[square.y + 1][square.x].occupied) {
                 block.grounded = true;
-            /*} else  {
-                block.grounded = false;*/
-            }
-
-            switch (movedType) {
-                case 'left':
-                    block.rightest = false;
-                    break;
-                case 'right':
-                    block.leftest = false;
-                    break;
-                case 'down':
-                    break;
-                case 'rotate':
-                    //
-                    break;
             }
         });
+
         return {collided: result};
     },
     move: {
@@ -300,7 +299,7 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     square.x--;
                 });
-                vectris.antiCollisionSystem(block, 'left');
+                vectris.antiCollisionSystem(block);
             }
         },
         right: function(block) {
@@ -308,15 +307,22 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     square.x++;
                 });
-                vectris.antiCollisionSystem(block, 'right');
+                vectris.antiCollisionSystem(block);
             }
+        },
+        up: function(block) {
+            //I don't expect to use this one other than in the correction of rotations
+            $.each(block.squares, function(key, square) {
+                square.y--;
+            });
+            // vectris.antiCollisionSystem(block);
         },
         down: function(block) {
             if (!block.grounded) {
                 $.each(block.squares, function(key, square) {
                     square.y++;
                 });
-                vectris.antiCollisionSystem(block, 'down');
+                vectris.antiCollisionSystem(block);
             } else {
                 //once it's grounded one next down will freeze it in place
                 block.frozen = true;
@@ -326,10 +332,14 @@ var vectris = {
             console.log('drop!');
         },
         rotate: function(block) {
-            //First I set the second square as my origin coordinates
-            var newOrigin = { x: block.squares[1].x, y: block.squares[1].y },
+            //in case the rotation leaves the block helplessly overflowing, i will rotate a clone first
+            var clone = $.extend(true, {}, block),
+                newOrigin = null,
                 aux = null;
-            $.each(block.squares, function (key, square) {
+            //first I set the second square as my origin coordinates
+            newOrigin = { x: clone.squares[1].x, y: clone.squares[1].y };
+
+            $.each(clone.squares, function (key, square) {
                 square.x -= newOrigin.x;
                 square.y -= newOrigin.y;
                 //^note that square[1] will end up being (0,0)
@@ -342,9 +352,12 @@ var vectris = {
                 square.x += newOrigin.x;
                 square.y += newOrigin.y;
                 //now I need to check that the new coordinates haven't overflowed the matrix
-                //if they have, the anti collision system will pull the block back in
+                //if they have, the anti collision system will pull the block back in, where possible
+                //or prevent the rotation
             });
-            vectris.antiCollisionSystem(block, 'rotate');
+            if (!vectris.antiCollisionSystem(clone).collided) {
+                $.extend(true, block, clone);
+            }
         }
     },
     play: function() {
