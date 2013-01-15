@@ -260,7 +260,9 @@ var vectris = {
             }
         },
         drop: function(block) {
-            console.log('drop!');
+            while (!block.frozen) {
+                vectris.move.down(block);
+            }
         },
         rotate: function(block) {
             //in case the rotation leaves the block helplessly overflowing, i will rotate a clone first
