@@ -110,7 +110,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-quit').click(function() {
-            $(document).unbind('keydown'); //@2do: get this into a method unbindControls()
+            vectris.unbindControls();
             $('#game').hide();
             $('#main').show();
         });
@@ -302,6 +302,9 @@ var vectris = {
             }
         }
     },
+    unbindControls: function() {
+        $(document).unbind('keydown');
+    },
     play: function() {
         var newBlock = {},
             gameOver = false,
@@ -380,6 +383,7 @@ var vectris = {
                     newBlock = vectris.createBlock();
                 } catch (err) {
                     console.log(err);
+                    vectris.unbindControls();
                 } finally {
                     vectris.grid.renderTheMatrix(newBlock);
                 }
