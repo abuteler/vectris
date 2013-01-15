@@ -42,7 +42,6 @@ var vectris = {
                 startAtX = null,
                 startAtY = null,
                 squareSize = this.squaresLength;
-
             if(!canvas.getContext) {
                 console.error('No canvas support!');
             } else {
@@ -134,7 +133,7 @@ var vectris = {
                 frozen: false
             },
             makeSquare = function (x, y) {
-                return { x: x, y: y};
+                return {x: x, y: y};
             };
         switch(shape) {
             case 0:
@@ -186,42 +185,53 @@ var vectris = {
                 block.color = 'rgb(170,210,230)';
                 break;
         }
-        if (vectris.antiCollisionSystem(block).collided) throw 'oh noes!';
+        if (vectris.antiCollisionSystem(block).collided) {
+            throw 'oh noes!';
+        }
         return block;
     },
     //checks and sets block boundaries and collision with stuff already in the matrix
     antiCollisionSystem: function(block) {
         var result = false;
-        //reset boundaries after move
+        //reset boundaries after a move
         block.leftest = false;
         block.rightest = false;
         block.grounded = false;
-
-        $.each(block.squares, function(key, square) {
-            //check for possible overflowing in rotation and correct it it
-            if (square.x < 0) {
-                vectris.move.right(block);
-            }
-            if (square.y > vectris.grid.heightInSquares-1) {
-                vectris.move.up(block);
-            }
-
-            //check for overlapping (should only happen on creation)
-            if (vectris.grid.theMatrix[square.y][square.x].occupied) {
-                result = true;
-            }
-            //check for left boundaries
-            if (square.x === 0 || vectris.grid.theMatrix[square.y][square.x - 1].occupied)
-                block.leftest = true;
-            //right boundaries
-            if (square.x === vectris.grid.widthInSquares-1 || vectris.grid.theMatrix[square.y][square.x + 1].occupied)
-                block.rightest = true;
-            //ground boundaries
-            if (square.y === vectris.grid.heightInSquares-1 || vectris.grid.theMatrix[square.y + 1][square.x].occupied) {
-                block.grounded = true;
-            }
-        });
-
+        try {
+            $.each(block.squares, function(key, square) {
+                //check for possible overflowing in rotation and correct it
+                if (square.x < 0) {
+                    vectris.move.right(block);
+                } else if (square.x > vectris.grid.widthInSquares-1) {
+                    vectris.move.left(block);
+                }
+                if (square.y < 0) {
+                    vectris.move.down(block);
+                }
+                if (square.y > vectris.grid.heightInSquares-1) {
+                    vectris.move.up(block);
+                }
+                //check for overlapping (should only happen on creation)
+                if (vectris.grid.theMatrix[square.y][square.x].occupied) {
+                    result = true;
+                }
+                //check for left boundaries
+                if (square.x === 0 || vectris.grid.theMatrix[square.y][square.x - 1].occupied) {
+                    block.leftest = true;
+                }
+                //right boundaries
+                if (square.x === vectris.grid.widthInSquares-1 || vectris.grid.theMatrix[square.y][square.x + 1].occupied) {
+                    block.rightest = true;
+                }
+                //ground boundaries
+                if (square.y === vectris.grid.heightInSquares-1 || vectris.grid.theMatrix[square.y + 1][square.x].occupied) {
+                    block.grounded = true;
+                }
+            });
+        } catch (e) {
+            // console.log(e);
+            result = true;
+        }
         return {collided: result};
     },
     move: {
@@ -246,7 +256,6 @@ var vectris = {
             $.each(block.squares, function(key, square) {
                 square.y--;
             });
-            // vectris.antiCollisionSystem(block);
         },
         down: function(block) {
             if (!block.grounded) {
@@ -284,10 +293,10 @@ var vectris = {
                 //finally, I put the block back where it was in the matrix, only rotated
                 square.x += newOrigin.x;
                 square.y += newOrigin.y;
-                //now I need to check that the new coordinates haven't overflowed the matrix
-                //if they have, the anti collision system will pull the block back in, where possible
-                //or prevent the rotation
             });
+            //now I need to check that the new coordinates haven't overflowed the matrix
+            //if they have, the anti collision system will pull the block back in, where possible,
+            //or prevent the rotation
             if (!vectris.antiCollisionSystem(clone).collided) {
                 $.extend(true, block, clone);
             }
@@ -334,7 +343,6 @@ var vectris = {
             self.gameOverStuff();
          }
       }*/
-        
         newBlock = vectris.createBlock();
         vectris.grid.renderTheMatrix(newBlock);
         //initialize controls
