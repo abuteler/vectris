@@ -132,126 +132,57 @@ var vectris = {
                 rightest: false,
                 grounded: false,
                 frozen: false
+            },
+            makeSquare = function (x, y) {
+                return { x: x, y: y};
             };
         switch(shape) {
             case 0:
                 //square
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX + 1,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX + 1,
-                    y: 1
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX + 1, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX + 1, 1));
                 block.color = 'rgb(150,0,160)';
                 break;
             case 1:
                 //column
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 2
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 3
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX, 2));
+                block.squares.push(makeSquare(startAtX, 3));
                 block.color = 'rgb(0,150,0)';
                 break;
             case 2:
                 //Left L
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 2
-                });
-                block.squares.push({
-                    x: startAtX - 1,
-                    y: 2
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX, 2));
+                block.squares.push(makeSquare(startAtX - 1, 2));
                 block.color = 'rgb(0,0,180)';
                 break;
             case 3:
                 //Right L
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 2
-                });
-                block.squares.push({
-                    x: startAtX + 1,
-                    y: 2
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX, 2));
+                block.squares.push(makeSquare(startAtX + 1, 2));
                 block.color = 'rgb(210,180,0)';
                 break;
             case 4:
                 //Left "lightning"
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX - 1,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX - 1,
-                    y: 2
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX - 1, 1));
+                block.squares.push(makeSquare(startAtX - 1, 2));
                 block.color = 'rgb(180,0,0)';
                 break;
             case 5:
                 //Right lightning
-                block.squares.push({
-                    x: startAtX,
-                    y: 0
-                });
-                block.squares.push({
-                    x: startAtX,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX + 1,
-                    y: 1
-                });
-                block.squares.push({
-                    x: startAtX + 1,
-                    y: 2
-                });
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX + 1, 1));
+                block.squares.push(makeSquare(startAtX + 1, 2));
                 block.color = 'rgb(170,210,230)';
                 break;
         }
