@@ -29,15 +29,14 @@ var vectris = {
             }
         },
         updateTheMatrix: function(block) {
-            var self = this;
             $.each(block.squares, function(key, square) {
-                self.theMatrix[square.y][square.x].occupied = true;
-                self.theMatrix[square.y][square.x].color = block.color;
+                vectris.grid.theMatrix[square.y][square.x].occupied = true;
+                vectris.grid.theMatrix[square.y][square.x].color = block.color;
             });
+
         },
         renderTheMatrix: function(block) {
-            var self = this,
-                canvas = $('#game canvas')[0],
+            var canvas = $('#game canvas')[0],
                 ctx = null,
                 startAtX = null,
                 startAtY = null,
@@ -47,15 +46,15 @@ var vectris = {
             } else {
                 ctx = canvas.getContext('2d');
                 //clear the canvas
-                ctx.clearRect(0, 0, self.getCanvasWidth(), self.getCanvasHeight());
+                ctx.clearRect(0, 0, vectris.grid.getCanvasWidth(), vectris.grid.getCanvasHeight());
                 //render the matrix
-                $.each(self.theMatrix, function(rowIndex, row) {
+                $.each(vectris.grid.theMatrix, function(rowIndex, row) {
                     $.each(row, function(cellIndex, cell) {
                         if(cell.occupied) {
                             ctx.fillStyle = cell.color;
                             //calculate coordinates
-                            startAtX = cellIndex * self.getGridUnitLength();
-                            startAtY = rowIndex * self.getGridUnitLength();
+                            startAtX = cellIndex * vectris.grid.getGridUnitLength();
+                            startAtY = rowIndex * vectris.grid.getGridUnitLength();
                             ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                         }
                     });
@@ -64,8 +63,8 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     ctx.fillStyle = block.color;
                     //calculate coordinates
-                    startAtX = square.x * self.getGridUnitLength();
-                    startAtY = square.y * self.getGridUnitLength();
+                    startAtX = square.x * vectris.grid.getGridUnitLength();
+                    startAtY = square.y * vectris.grid.getGridUnitLength();
                     ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                 });
             }
