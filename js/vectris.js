@@ -143,7 +143,8 @@ var vectris = {
                 leftest: false,
                 rightest: false,
                 grounded: false,
-                frozen: false
+                frozen: false,
+                rotatable: true
             },
             makeSquare = function (x, y) {
                 return {x: x, y: y};
@@ -156,6 +157,7 @@ var vectris = {
                 block.squares.push(makeSquare(startAtX, 1));
                 block.squares.push(makeSquare(startAtX + 1, 1));
                 block.color = 'rgb(150,0,160)';
+                block.rotatable = false;
                 break;
             case 1:
                 //column
@@ -287,31 +289,33 @@ var vectris = {
             }
         },
         rotate: function(block) {
-            //in case the rotation leaves the block helplessly overflowing, i will rotate a clone first
-            var clone = $.extend(true, {}, block),
-                newOrigin = null,
-                aux = null;
-            //first I set the second square as my origin coordinates
-            newOrigin = { x: clone.squares[1].x, y: clone.squares[1].y };
+            if (block.rotatable) {
+                //in case the rotation leaves the block helplessly overflowing, i will rotate a clone first
+                var clone = $.extend(true, {}, block),
+                    newOrigin = null,
+                    aux = null;
+                //first I set the second square as my origin coordinates
+                newOrigin = { x: clone.squares[1].x, y: clone.squares[1].y };
 
-            $.each(clone.squares, function (key, square) {
-                square.x -= newOrigin.x;
-                square.y -= newOrigin.y;
-                //^note that square[1] will end up being (0,0)
-                //then I do the Linear Transformation (-y, x), which rotates 90 degrees counter clockwise
-                //See http://en.wikipedia.org/wiki/Transformation_matrix#Examples_in_2D_graphics for additional reference
-                aux = square.x;
-                square.x = -square.y;
-                square.y = aux;
-                //finally, I put the block back where it was in the matrix, only rotated
-                square.x += newOrigin.x;
-                square.y += newOrigin.y;
-            });
-            //now I need to check that the new coordinates haven't overflowed the matrix
-            //if they have, the anti collision system will pull the block back in, where possible,
-            //or prevent the rotation
-            if (!vectris.antiCollisionSystem(clone).collided) {
-                $.extend(true, block, clone);
+                $.each(clone.squares, function (key, square) {
+                    square.x -= newOrigin.x;
+                    square.y -= newOrigin.y;
+                    //^note that square[1] will end up being (0,0)
+                    //then I do the Linear Transformation (-y, x), which rotates 90 degrees counter clockwise
+                    //See http://en.wikipedia.org/wiki/Transformation_matrix#Examples_in_2D_graphics for additional reference
+                    aux = square.x;
+                    square.x = -square.y;
+                    square.y = aux;
+                    //finally, I put the block back where it was in the matrix, only rotated
+                    square.x += newOrigin.x;
+                    square.y += newOrigin.y;
+                });
+                //now I need to check that the new coordinates haven't overflowed the matrix
+                //if they have, the anti collision system will pull the block back in, where possible,
+                //or prevent the rotation
+                if (!vectris.antiCollisionSystem(clone).collided) {
+                    $.extend(true, block, clone);
+                }
             }
         }
     },
