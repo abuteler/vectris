@@ -29,11 +29,25 @@ var vectris = {
             }
         },
         updateTheMatrix: function(block) {
+            var counter = null,
+                linesToCheck = [];
             $.each(block.squares, function(key, square) {
                 vectris.grid.theMatrix[square.y][square.x].occupied = true;
                 vectris.grid.theMatrix[square.y][square.x].color = block.color;
+                //check for completed lines
+                if (linesToCheck.indexOf(square.y) === -1) {
+                    linesToCheck.push(square.y);
+                }
             });
-
+            $.each(linesToCheck, function(key, line) {
+                counter = 0;
+                $.each(vectris.grid.theMatrix[line], function(key, square) {
+                    counter += square.occupied ? 1 : 0;
+                });
+                if (counter === vectris.grid.widthInSquares) {
+                    console.log('rock!');
+                }
+            });
         },
         renderTheMatrix: function(block) {
             var canvas = $('#game canvas')[0],
