@@ -32,12 +32,13 @@ var vectris = {
             }
         },
         updateTheMatrix: function(block) {
-            var counter = null,
+            var self = this,
+                counter = null,
                 linesToCheck = [],
                 linesToBurn = [];
             $.each(block.squares, function(key, square) {
-                vectris.grid.theMatrix[square.y][square.x].occupied = true;
-                vectris.grid.theMatrix[square.y][square.x].color = block.color;
+                self.theMatrix[square.y][square.x].occupied = true;
+                self.theMatrix[square.y][square.x].color = block.color;
                 //check for completed lines
                 if (linesToCheck.indexOf(square.y) === -1) {
                     linesToCheck.push(square.y);
@@ -45,19 +46,19 @@ var vectris = {
             });
             $.each(linesToCheck, function(key, line) {
                 counter = 0;
-                $.each(vectris.grid.theMatrix[line], function(key, square) {
+                $.each(self.theMatrix[line], function(key, square) {
                     counter += square.occupied ? 1 : 0;
                 });
-                if (counter === vectris.grid.widthInSquares) {
+                if (counter === self.widthInSquares) {
                     linesToBurn.push(line);
                 }
             });
             if (linesToBurn.length > 0) {
-                vectris.grid.burnLines(linesToBurn);
+                this.burnLines(linesToBurn);
             }
         },
         burnLines: function(lines) {
-            var removed = vectris.grid.theMatrix.splice(lines[0], lines.length);
+            var removed = this.theMatrix.splice(lines[0], lines.length);
             vectris.burnedLines += lines.length;
             for (var i = 0; i < lines.length; i++) {
                 this.theMatrix.unshift(this.createRow());
@@ -66,7 +67,8 @@ var vectris = {
             console.log(vectris.burnedLines);
         },
         renderTheMatrix: function(block) {
-            var canvas = $('#game canvas')[0],
+            var self = this,
+                canvas = $('#game canvas')[0],
                 ctx = null,
                 startAtX = null,
                 startAtY = null,
@@ -76,15 +78,15 @@ var vectris = {
             } else {
                 ctx = canvas.getContext('2d');
                 //clear the canvas
-                ctx.clearRect(0, 0, vectris.grid.getCanvasWidth(), vectris.grid.getCanvasHeight());
+                ctx.clearRect(0, 0, this.getCanvasWidth(), this.getCanvasHeight());
                 //render the matrix
-                $.each(vectris.grid.theMatrix, function(rowIndex, row) {
+                $.each(this.theMatrix, function(rowIndex, row) {
                     $.each(row, function(cellIndex, cell) {
                         if(cell.occupied) {
                             ctx.fillStyle = cell.color;
                             //calculate coordinates
-                            startAtX = cellIndex * vectris.grid.getGridUnitLength();
-                            startAtY = rowIndex * vectris.grid.getGridUnitLength();
+                            startAtX = cellIndex * self.getGridUnitLength();
+                            startAtY = rowIndex * self.getGridUnitLength();
                             ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                         }
                     });
@@ -93,8 +95,8 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     ctx.fillStyle = block.color;
                     //calculate coordinates
-                    startAtX = square.x * vectris.grid.getGridUnitLength();
-                    startAtY = square.y * vectris.grid.getGridUnitLength();
+                    startAtX = square.x * self.getGridUnitLength();
+                    startAtY = square.y * self.getGridUnitLength();
                     ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                 });
             }
@@ -112,9 +114,10 @@ var vectris = {
 
         //dev mode: skip the menu
         if (section === 'game')
-            vectris.play();
+            this.play();
     },
     initMainMenu: function() {
+        var self = this;
         //set hover behaviour
         $('#main-menu li').mouseover(function() {
             $(this).toggleClass('hover');
@@ -126,10 +129,11 @@ var vectris = {
         $('#btn-play').click(function() {
             $('#main').hide();
             $('#game').show();
-            vectris.play();
+            self.play();
         });
     },
     initInGameMenu: function() {
+        var self = this;
         //set hover behaviour
         $('#in-game-menu li').mouseover(function() {
             $(this).toggleClass('hover');
@@ -139,7 +143,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-quit').click(function() {
-            vectris.unbindControls();
+            self.unbindControls();
             $('#game').hide();
             $('#main').show();
         });
@@ -216,14 +220,15 @@ var vectris = {
                 block.color = 'rgb(170,210,230)';
                 break;
         }
-        if (vectris.antiCollisionSystem(block).collided) {
+        if (this.antiCollisionSystem(block).collided) {
             throw 'oh noes!';
         }
         return block;
     },
     //checks and sets block boundaries and collision with stuff already in the matrix
     antiCollisionSystem: function(block) {
-        var result = false;
+        var self = this,
+            result = false;
         //reset boundaries after a move
         block.leftest = false;
         block.rightest = false;
@@ -232,30 +237,30 @@ var vectris = {
             $.each(block.squares, function(key, square) {
                 //check for possible overflowing in rotation and correct it
                 if (square.x < 0) {
-                    vectris.move.right(block);
-                } else if (square.x > vectris.grid.widthInSquares-1) {
-                    vectris.move.left(block);
+                    self.move.right(block);
+                } else if (square.x > self.grid.widthInSquares-1) {
+                    self.move.left(block);
                 }
                 if (square.y < 0) {
-                    vectris.move.down(block);
+                    self.move.down(block);
                 }
-                if (square.y > vectris.grid.heightInSquares-1) {
-                    vectris.move.up(block);
+                if (square.y > self.grid.heightInSquares-1) {
+                    self.move.up(block);
                 }
                 //check for overlapping (should only happen on creation)
-                if (vectris.grid.theMatrix[square.y][square.x].occupied) {
+                if (self.grid.theMatrix[square.y][square.x].occupied) {
                     result = true;
                 }
                 //check for left boundaries
-                if (square.x === 0 || vectris.grid.theMatrix[square.y][square.x - 1].occupied) {
+                if (square.x === 0 || self.grid.theMatrix[square.y][square.x - 1].occupied) {
                     block.leftest = true;
                 }
                 //right boundaries
-                if (square.x === vectris.grid.widthInSquares-1 || vectris.grid.theMatrix[square.y][square.x + 1].occupied) {
+                if (square.x === self.grid.widthInSquares-1 || self.grid.theMatrix[square.y][square.x + 1].occupied) {
                     block.rightest = true;
                 }
                 //ground boundaries
-                if (square.y === vectris.grid.heightInSquares-1 || vectris.grid.theMatrix[square.y + 1][square.x].occupied) {
+                if (square.y === self.grid.heightInSquares-1 || self.grid.theMatrix[square.y + 1][square.x].occupied) {
                     block.grounded = true;
                 }
             });
@@ -339,14 +344,15 @@ var vectris = {
         $(document).unbind('keydown');
     },
     play: function() {
-        var newBlock = {},
+        var self = this,
+            newBlock = {},
             gameOver = false,
             floored = false,
             chronos = null;
         //initialize game matrix
-        vectris.grid.initializeTheMatrix();
+        this.grid.initializeTheMatrix();
         //initialize burnedLines
-        vectris.burnedLines = 0;
+        this.burnedLines = 0;
 
         //rock and roll!
 
@@ -382,8 +388,8 @@ var vectris = {
             self.gameOverStuff();
          }
       }*/
-        newBlock = vectris.createBlock();
-        vectris.grid.renderTheMatrix(newBlock);
+        newBlock = this.createBlock();
+        this.grid.renderTheMatrix(newBlock);
         //initialize controls
         $(document).keydown(function(eventObj) {
             switch(eventObj.which) {
@@ -393,35 +399,35 @@ var vectris = {
                     break;
                 case 32: //space bar
                     eventObj.preventDefault();
-                    vectris.move.drop(newBlock);
+                    self.move.drop(newBlock);
                     break;
                 case 37: //left arrow
                     eventObj.preventDefault();
-                    vectris.move.left(newBlock);
+                    self.move.left(newBlock);
                     break;
                 case 38: //up arrow
                     eventObj.preventDefault();
-                    vectris.move.rotate(newBlock);
+                    self.move.rotate(newBlock);
                     break;
                 case 39: //right arrow
                     eventObj.preventDefault();
-                    vectris.move.right(newBlock);
+                    self.move.right(newBlock);
                     break;
                 case 40: //down arrow
                     eventObj.preventDefault();
-                    vectris.move.down(newBlock);
+                    self.move.down(newBlock);
                     break;
             }
-            vectris.grid.renderTheMatrix(newBlock);
+            self.grid.renderTheMatrix(newBlock);
             if (newBlock.frozen) {
-                vectris.grid.updateTheMatrix(newBlock);
+                self.grid.updateTheMatrix(newBlock);
                 try {
-                    newBlock = vectris.createBlock();
+                    newBlock = self.createBlock();
                 } catch (err) {
                     console.log(err);
-                    vectris.unbindControls();
+                    self.unbindControls();
                 } finally {
-                    vectris.grid.renderTheMatrix(newBlock);
+                    self.grid.renderTheMatrix(newBlock);
                 }
             }
         });
