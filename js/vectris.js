@@ -1,10 +1,11 @@
 var vectris = {
+    burnedLines: null,
     grid: {
         widthInSquares: 10,
         heightInSquares: 16,
         squaresMargin: 1,
         squaresLength: 25,
-        theMatrix: [],
+        theMatrix: null,
         getCanvasWidth: function() {
             return this.widthInSquares * this.getGridUnitLength();
         },
@@ -14,23 +15,26 @@ var vectris = {
         getGridUnitLength: function() {
             return this.squaresLength + this.squaresMargin * 2;
         },
-        initializeTheMatrix: function() {
+        createRow: function() {
             var row = [];
-            vectris.grid.theMatrix = [];
+            for(var i = 0; i < this.widthInSquares; i++) {
+                row.push({
+                    occupied: false,
+                    color: null
+                });
+            }
+            return row;
+        },
+        initializeTheMatrix: function() {
+            this.theMatrix = [];
             for(var i = 0; i < this.heightInSquares; i++) {
-                for(var j = 0; j < this.widthInSquares; j++) {
-                    row.push({
-                        occupied: false,
-                        color: null
-                    });
-                }
-                this.theMatrix.push(row);
-                row = [];
+                this.theMatrix.push(this.createRow());
             }
         },
         updateTheMatrix: function(block) {
             var counter = null,
-                linesToCheck = [];
+                linesToCheck = [],
+                linesToBurn = [];
             $.each(block.squares, function(key, square) {
                 vectris.grid.theMatrix[square.y][square.x].occupied = true;
                 vectris.grid.theMatrix[square.y][square.x].color = block.color;
@@ -45,9 +49,21 @@ var vectris = {
                     counter += square.occupied ? 1 : 0;
                 });
                 if (counter === vectris.grid.widthInSquares) {
-                    console.log('rock!');
+                    linesToBurn.push(line);
                 }
             });
+            if (linesToBurn.length > 0) {
+                vectris.grid.burnLines(linesToBurn);
+            }
+        },
+        burnLines: function(lines) {
+            var removed = vectris.grid.theMatrix.splice(lines[0], lines.length);
+            vectris.burnedLines += lines.length;
+            for (var i = 0; i < lines.length; i++) {
+                this.theMatrix.unshift(this.createRow());
+            }
+            //@2Do: implement a score UI
+            console.log(vectris.burnedLines);
         },
         renderTheMatrix: function(block) {
             var canvas = $('#game canvas')[0],
@@ -329,6 +345,9 @@ var vectris = {
             chronos = null;
         //initialize game matrix
         vectris.grid.initializeTheMatrix();
+        //initialize burnedLines
+        vectris.burnedLines = 0;
+
         //rock and roll!
 
         /* MUST RETHINK
