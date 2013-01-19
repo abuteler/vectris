@@ -55,7 +55,7 @@ section {
 }
 
 #game .game-ui {
-    width: 320px;
+    width: 350px;
     margin: auto;
     display: block;
 }
@@ -67,7 +67,7 @@ section {
 #game .game-ui .score-box {
     border: 1px solid rgb(206, 138, 138);
     background-color: rgb(255, 163, 0);
-    width: 30px;
+    width: 50px;
     margin-left: 16px;
     float: left;
 }
