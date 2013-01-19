@@ -10,7 +10,7 @@ section {
     display: none;
 }
 
-/* main + Main menu */
+/* Main Section */
 #main nav {
     width: 300px;
     margin: auto;
@@ -32,10 +32,9 @@ section {
 }
 /*-----*/
 
-/* Game + In game menu */
+/* Game Section */
 #game nav {
-    width: 300px;
-    margin: auto;
+    width: 250px;
 }
 #in-game-menu {
     width: 200px;
@@ -55,14 +54,33 @@ section {
     cursor: pointer;
 }
 
-#game canvas {
-    border: 1px solid blue;
+#game .game-ui {
+    width: 320px;
     margin: auto;
     display: block;
+}
+#game .game-ui canvas {
+    border: 1px solid blue;
+    float: left;
+    display: block;
+}
+#game .game-ui .score-box {
+    border: 1px solid rgb(206, 138, 138);
+    background-color: rgb(255, 163, 0);
+    width: 30px;
+    margin-left: 16px;
+    float: left;
+}
+#game .game-ui .score-box #score {
+    font-size: 36px;
+    text-align: center;
+    display: block;
+    color: rgb(255, 255, 255);
 }
 /*-----*/
 
 footer {
+    clear:both;
     font-size: 12px;
     text-align: center;
     position: relative;

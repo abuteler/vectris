@@ -63,8 +63,8 @@ var vectris = {
             for (var i = 0; i < lines.length; i++) {
                 this.theMatrix.unshift(this.createRow());
             }
-            //@2Do: implement a score UI
-            console.log(vectris.burnedLines);
+            //update score
+            $('#score').html(vectris.burnedLines);
         },
         renderTheMatrix: function(block) {
             var self = this,
@@ -143,7 +143,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-quit').click(function() {
-            self.unbindControls();
+            self.gameOverStuff(true);
             $('#game').hide();
             $('#main').show();
         });
@@ -425,14 +425,19 @@ var vectris = {
                     newBlock = self.createBlock();
                 } catch (err) {
                     console.log(err);
-                    self.unbindControls();
+                    self.gameOverStuff();
                 } finally {
                     self.grid.renderTheMatrix(newBlock);
                 }
             }
         });
     },
-    gameOverStuff: function() {
+    gameOverStuff: function(quit) {
+        if (quit) {
+            this.burnedLines = null;
+            $('#score').html(0);
+        }
+        this.unbindControls();
         console.error('Game Over!');
     }
 };
