@@ -1,5 +1,6 @@
 var vectris = {
     burnedLines: null,
+    currentBlock: null,
     grid: {
         widthInSquares: 10,
         heightInSquares: 16,
@@ -221,7 +222,7 @@ var vectris = {
                 break;
         }
         if (this.antiCollisionSystem(block).collided) {
-            throw 'oh noes!';
+            throw { block: block, error: 'oh noes!' };
         }
         return block;
     },
@@ -265,13 +266,15 @@ var vectris = {
                 }
             });
         } catch (e) {
+            //@2Do: check whether this try .. catch is used. I think not anymore.
             // console.log(e);
             result = true;
         }
         return {collided: result};
     },
     move: {
-        left: function(block) {
+        left: function() {
+            var block = vectris.currentBlock;
             if (!block.leftest){
                 $.each(block.squares, function(key, square) {
                     square.x--;
@@ -279,7 +282,8 @@ var vectris = {
                 vectris.antiCollisionSystem(block);
             }
         },
-        right: function(block) {
+        right: function() {
+            var block = vectris.currentBlock;
             if (!block.rightest){
                 $.each(block.squares, function(key, square) {
                     square.x++;
@@ -287,13 +291,15 @@ var vectris = {
                 vectris.antiCollisionSystem(block);
             }
         },
-        up: function(block) {
+        up: function() {
+            var block = vectris.currentBlock;
             //I don't expect to use this one other than in the correction of rotations
             $.each(block.squares, function(key, square) {
                 square.y--;
             });
         },
-        down: function(block) {
+        down: function() {
+            var block = vectris.currentBlock;
             if (!block.grounded) {
                 $.each(block.squares, function(key, square) {
                     square.y++;
@@ -304,12 +310,14 @@ var vectris = {
                 block.frozen = true;
             }
         },
-        drop: function(block) {
+        drop: function() {
+            var block = vectris.currentBlock;
             while (!block.frozen) {
-                vectris.move.down(block);
+                vectris.move.down();
             }
         },
-        rotate: function(block) {
+        rotate: function() {
+            var block = vectris.currentBlock;
             if (block.rotatable) {
                 //in case the rotation leaves the block helplessly overflowing, i will rotate a clone first
                 var clone = $.extend(true, {}, block),
@@ -339,6 +347,66 @@ var vectris = {
                 }
             }
         }
+    },
+    nextBlock: function() {
+        //updates the matrix with last block and creates new one, or throws error via this.createBlock();
+        this.grid.updateTheMatrix(this.currentBlock);
+        newBlock = this.createBlock();
+        return newBlock;
+    },
+    updateGameStatusAfterMove: function() {
+        console.log('aaa');
+        this.grid.renderTheMatrix(this.currentBlock);
+        if (this.currentBlock.frozen) {
+            try {
+                this.currentBlock = this.nextBlock();
+            } catch (err) {
+                console.log(err.error);
+                this.currentBlock = err.block;
+                this.gameOverStuff();
+            } finally {
+                this.grid.renderTheMatrix(this.currentBlock);
+            }
+        }
+    },
+    bindControls: function() {
+        var self = this,
+            gameKeyPressed = null;
+        $(document).keydown(function(eventObj) {
+            gameKeyPressed = true;
+            switch(eventObj.which) {
+                case 27: //escape
+                    // eventObj.preventDefault();
+                    // $(document).unbind('keydown');
+                    break;
+                case 32: //space bar
+                    eventObj.preventDefault();
+                    self.move.drop();
+                    break;
+                case 37: //left arrow
+                    eventObj.preventDefault();
+                    self.move.left();
+                    break;
+                case 38: //up arrow
+                    eventObj.preventDefault();
+                    self.move.rotate();
+                    break;
+                case 39: //right arrow
+                    eventObj.preventDefault();
+                    self.move.right();
+                    break;
+                case 40: //down arrow
+                    eventObj.preventDefault();
+                    self.move.down();
+                    break;
+                default:
+                    gameKeyPressed = false;
+                    break;
+            };
+            if(gameKeyPressed) {
+                self.updateGameStatusAfterMove();
+            }
+        });
     },
     unbindControls: function() {
         $(document).unbind('keydown');
@@ -388,49 +456,10 @@ var vectris = {
             self.gameOverStuff();
          }
       }*/
-        newBlock = this.createBlock();
-        this.grid.renderTheMatrix(newBlock);
-        //initialize controls
-        $(document).keydown(function(eventObj) {
-            switch(eventObj.which) {
-                case 27: //escape
-                    eventObj.preventDefault();
-                    $(document).unbind('keydown');
-                    break;
-                case 32: //space bar
-                    eventObj.preventDefault();
-                    self.move.drop(newBlock);
-                    break;
-                case 37: //left arrow
-                    eventObj.preventDefault();
-                    self.move.left(newBlock);
-                    break;
-                case 38: //up arrow
-                    eventObj.preventDefault();
-                    self.move.rotate(newBlock);
-                    break;
-                case 39: //right arrow
-                    eventObj.preventDefault();
-                    self.move.right(newBlock);
-                    break;
-                case 40: //down arrow
-                    eventObj.preventDefault();
-                    self.move.down(newBlock);
-                    break;
-            }
-            self.grid.renderTheMatrix(newBlock);
-            if (newBlock.frozen) {
-                self.grid.updateTheMatrix(newBlock);
-                try {
-                    newBlock = self.createBlock();
-                } catch (err) {
-                    console.log(err);
-                    self.gameOverStuff();
-                } finally {
-                    self.grid.renderTheMatrix(newBlock);
-                }
-            }
-        });
+        this.currentBlock = this.createBlock();
+        this.grid.renderTheMatrix(this.currentBlock);
+        this.bindControls();
+        
     },
     gameOverStuff: function(quit) {
         if (quit) {
