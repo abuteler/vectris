@@ -355,7 +355,6 @@ var vectris = {
         return newBlock;
     },
     updateGameStatusAfterMove: function() {
-        console.log('aaa');
         this.grid.renderTheMatrix(this.currentBlock);
         if (this.currentBlock.frozen) {
             try {
@@ -368,6 +367,19 @@ var vectris = {
                 this.grid.renderTheMatrix(this.currentBlock);
             }
         }
+    },
+    startGravity: function(time) {
+        this.gravity = setInterval(function(){
+            vectris.move.down();
+            vectris.updateGameStatusAfterMove();
+        }, time);
+    },
+    stopGravity: function() {
+        clearInterval(this.gravity);
+    },
+    resetGravity: function(time) {
+        this.stopGravity();
+        this.startGravity(time);
     },
     bindControls: function() {
         var self = this,
@@ -382,6 +394,7 @@ var vectris = {
                 case 32: //space bar
                     eventObj.preventDefault();
                     self.move.drop();
+                    vectris.resetGravity(self.gravityDelayTime);
                     break;
                 case 37: //left arrow
                     eventObj.preventDefault();
@@ -398,6 +411,7 @@ var vectris = {
                 case 40: //down arrow
                     eventObj.preventDefault();
                     self.move.down();
+                    vectris.resetGravity(self.gravityDelayTime);
                     break;
                 default:
                     gameKeyPressed = false;
@@ -421,51 +435,20 @@ var vectris = {
         this.grid.initializeTheMatrix();
         //initialize burnedLines
         this.burnedLines = 0;
+        this.gravityDelayTime = 700; //@2Do: implement handicap and progressive difficulty
 
         //rock and roll!
-
-        /* MUST RETHINK
-        while (!gameOver){
-         try {
-            newBlock = this.createBlock();
-            self.grid.renderTheMatrix(newBlock);
-            console.log(newBlock);
-                  console.log('floored i '+floored);
-            while (!floored) {
-                  console.log('floored j '+floored);
-
-                  
-                  
-               chronos = setTimeout(function(){
-                  console.log('floored'+floored);
-                  self.grid.renderTheMatrix(newBlock);
-                  self.move.down(newBlock);
-                  if (self.collides(newBlock)){
-                     floored = true;
-                     self.grid.updateTheMatrix(newBlock); //@do: -1y
-                     clearInterval(chronos);
-                  }
-               }, 1200);
-            }
-            // clearInterval(chronos);
-         } catch (err) {
-            // console.log(err);
-            gameOver = true;
-            //last render
-            self.grid.renderTheMatrix(newBlock);
-            self.gameOverStuff();
-         }
-      }*/
         this.currentBlock = this.createBlock();
         this.grid.renderTheMatrix(this.currentBlock);
         this.bindControls();
-        
+        this.startGravity(this.gravityDelayTime);
     },
     gameOverStuff: function(quit) {
         if (quit) {
             this.burnedLines = null;
             $('#score').html(0);
         }
+        this.stopGravity();
         this.unbindControls();
         console.error('Game Over!');
     }
