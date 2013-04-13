@@ -33,13 +33,13 @@ var vectris = {
             }
         },
         updateTheMatrix: function(block) {
-            var self = this,
+            var that = this,
                 counter = null,
                 linesToCheck = [],
                 linesToBurn = [];
             $.each(block.squares, function(key, square) {
-                self.theMatrix[square.y][square.x].occupied = true;
-                self.theMatrix[square.y][square.x].color = block.color;
+                that.theMatrix[square.y][square.x].occupied = true;
+                that.theMatrix[square.y][square.x].color = block.color;
                 //check for completed lines
                 if (linesToCheck.indexOf(square.y) === -1) {
                     linesToCheck.push(square.y);
@@ -47,10 +47,10 @@ var vectris = {
             });
             $.each(linesToCheck, function(key, line) {
                 counter = 0;
-                $.each(self.theMatrix[line], function(key, square) {
+                $.each(that.theMatrix[line], function(key, square) {
                     counter += square.occupied ? 1 : 0;
                 });
-                if (counter === self.widthInSquares) {
+                if (counter === that.widthInSquares) {
                     linesToBurn.push(line);
                 }
             });
@@ -68,7 +68,7 @@ var vectris = {
             $('#score').html(vectris.burnedLines);
         },
         renderTheMatrix: function(block) {
-            var self = this,
+            var that = this,
                 canvas = $('#game canvas')[0],
                 ctx = null,
                 startAtX = null,
@@ -86,8 +86,8 @@ var vectris = {
                         if(cell.occupied) {
                             ctx.fillStyle = cell.color;
                             //calculate coordinates
-                            startAtX = cellIndex * self.getGridUnitLength();
-                            startAtY = rowIndex * self.getGridUnitLength();
+                            startAtX = cellIndex * that.getGridUnitLength();
+                            startAtY = rowIndex * that.getGridUnitLength();
                             ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                         }
                     });
@@ -96,8 +96,8 @@ var vectris = {
                 $.each(block.squares, function(key, square) {
                     ctx.fillStyle = block.color;
                     //calculate coordinates
-                    startAtX = square.x * self.getGridUnitLength();
-                    startAtY = square.y * self.getGridUnitLength();
+                    startAtX = square.x * that.getGridUnitLength();
+                    startAtY = square.y * that.getGridUnitLength();
                     ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                 });
             }
@@ -118,7 +118,7 @@ var vectris = {
             this.play();
     },
     initMainMenu: function() {
-        var self = this;
+        var that = this;
         //set hover behaviour
         $('#main-menu li').mouseover(function() {
             $(this).toggleClass('hover');
@@ -130,11 +130,11 @@ var vectris = {
         $('#btn-play').click(function() {
             $('#main').hide();
             $('#game').show();
-            self.play();
+            that.play();
         });
     },
     initInGameMenu: function() {
-        var self = this;
+        var that = this;
         //set hover behaviour
         $('#in-game-menu li').mouseover(function() {
             $(this).toggleClass('hover');
@@ -144,7 +144,7 @@ var vectris = {
         });
         //set buttons behaviour
         $('#btn-quit').click(function() {
-            self.gameOverStuff(true);
+            that.gameOverStuff(true);
             $('#game').hide();
             $('#main').show();
         });
@@ -228,7 +228,7 @@ var vectris = {
     },
     //checks and sets block boundaries and collision with stuff already in the matrix
     antiCollisionSystem: function(block) {
-        var self = this,
+        var that = this,
             result = false;
         //reset boundaries after a move
         block.leftest = false;
@@ -238,30 +238,30 @@ var vectris = {
             $.each(block.squares, function(key, square) {
                 //check for possible overflowing in rotation and correct it
                 if (square.x < 0) {
-                    self.move.right(block);
-                } else if (square.x > self.grid.widthInSquares-1) {
-                    self.move.left(block);
+                    that.move.right(block);
+                } else if (square.x > that.grid.widthInSquares-1) {
+                    that.move.left(block);
                 }
                 if (square.y < 0) {
-                    self.move.down(block);
+                    that.move.down(block);
                 }
-                if (square.y > self.grid.heightInSquares-1) {
-                    self.move.up(block);
+                if (square.y > that.grid.heightInSquares-1) {
+                    that.move.up(block);
                 }
                 //check for overlapping (should only happen on creation)
-                if (self.grid.theMatrix[square.y][square.x].occupied) {
+                if (that.grid.theMatrix[square.y][square.x].occupied) {
                     result = true;
                 }
                 //check for left boundaries
-                if (square.x === 0 || self.grid.theMatrix[square.y][square.x - 1].occupied) {
+                if (square.x === 0 || that.grid.theMatrix[square.y][square.x - 1].occupied) {
                     block.leftest = true;
                 }
                 //right boundaries
-                if (square.x === self.grid.widthInSquares-1 || self.grid.theMatrix[square.y][square.x + 1].occupied) {
+                if (square.x === that.grid.widthInSquares-1 || that.grid.theMatrix[square.y][square.x + 1].occupied) {
                     block.rightest = true;
                 }
                 //ground boundaries
-                if (square.y === self.grid.heightInSquares-1 || self.grid.theMatrix[square.y + 1][square.x].occupied) {
+                if (square.y === that.grid.heightInSquares-1 || that.grid.theMatrix[square.y + 1][square.x].occupied) {
                     block.grounded = true;
                 }
             });
@@ -382,7 +382,7 @@ var vectris = {
         this.startGravity(time);
     },
     bindControls: function() {
-        var self = this,
+        var that = this,
             gameKeyPressed = null;
         $(document).keydown(function(eventObj) {
             gameKeyPressed = true;
@@ -393,32 +393,32 @@ var vectris = {
                     break;
                 case 32: //space bar
                     eventObj.preventDefault();
-                    self.move.drop();
-                    vectris.resetGravity(self.gravityDelayTime);
+                    that.move.drop();
+                    vectris.resetGravity(that.gravityDelayTime);
                     break;
                 case 37: //left arrow
                     eventObj.preventDefault();
-                    self.move.left();
+                    that.move.left();
                     break;
                 case 38: //up arrow
                     eventObj.preventDefault();
-                    self.move.rotate();
+                    that.move.rotate();
                     break;
                 case 39: //right arrow
                     eventObj.preventDefault();
-                    self.move.right();
+                    that.move.right();
                     break;
                 case 40: //down arrow
                     eventObj.preventDefault();
-                    self.move.down();
-                    vectris.resetGravity(self.gravityDelayTime);
+                    that.move.down();
+                    vectris.resetGravity(that.gravityDelayTime);
                     break;
                 default:
                     gameKeyPressed = false;
                     break;
             };
             if(gameKeyPressed) {
-                self.updateGameStatusAfterMove();
+                that.updateGameStatusAfterMove();
             }
         });
     },
@@ -426,7 +426,7 @@ var vectris = {
         $(document).unbind('keydown');
     },
     play: function() {
-        var self = this,
+        var that = this,
             newBlock = {},
             gameOver = false,
             floored = false,
