@@ -459,7 +459,6 @@ var vectris = {
         this.stopGravity();
         this.unbindControls();
         $('.game-over-box').show();
-        console.error('Game Over!');
     }
 };
 
