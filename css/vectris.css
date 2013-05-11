@@ -58,6 +58,7 @@ section {
     width: 350px;
     margin: auto;
     display: block;
+    position: relative;
 }
 #game .game-ui canvas {
     border: 1px solid blue;
@@ -76,6 +77,24 @@ section {
     text-align: center;
     display: block;
     color: rgb(255, 255, 255);
+}
+#game .game-ui .game-over-box {
+    border: 1px solid rgb(210, 66, 66);
+    background-color: rgb(80, 65, 200);
+    width: 160px;
+    height: 32px;
+    position: absolute;
+    left: 55px;
+    top: 160px;
+    opacity: .8;
+    display: none;
+}
+#game .game-ui .game-over-box span {
+    position: relative;
+    color: white;
+    font-size: 21px;
+    margin: 3px 0px 0px 14px;
+    display: inline-block;
 }
 /*-----*/
 
