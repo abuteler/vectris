@@ -40,23 +40,36 @@ var vectris = {
             $.each(block.squares, function(key, square) {
                 that.theMatrix[square.y][square.x].occupied = true;
                 that.theMatrix[square.y][square.x].color = block.color;
-                //check for completed lines
+                //get unique vertical coordinates
                 if (linesToCheck.indexOf(square.y) === -1) {
                     linesToCheck.push(square.y);
                 }
             });
-            $.each(linesToCheck, function(key, line) {
-                counter = 0;
-                $.each(that.theMatrix[line], function(key, square) {
-                    counter += square.occupied ? 1 : 0;
-                });
-                if (counter === that.widthInSquares) {
-                    linesToBurn.push(line);
-                }
-            });
+            linesToBurn = this.getLinesCompleted(linesToCheck);
             if (linesToBurn.length > 0) {
                 this.burnLines(linesToBurn);
             }
+        },
+        getLinesCompleted: function(linesToCheck){
+            var that = this,
+                completed = [];
+            $.each(linesToCheck, function(key, line) {
+                if (that.isLineComplete(line)) {
+                    completed.push(line);
+                }
+            });
+
+            return completed;
+        },
+        isLineComplete: function(line){
+            var counter = 0,
+                result = null;
+            $.each(this.theMatrix[line], function(key, square) {
+                counter += square.occupied ? 1 : 0;
+            });
+            result = (counter === this.widthInSquares) ? true : false;
+
+            return result;
         },
         burnLines: function(lines) {
             var removed = this.theMatrix.splice(lines[0], lines.length);
@@ -426,11 +439,6 @@ var vectris = {
         $(document).unbind('keydown');
     },
     play: function() {
-        var that = this,
-            newBlock = {},
-            gameOver = false,
-            floored = false,
-            chronos = null;
         //initialize game matrix
         this.grid.initializeTheMatrix();
         //initialize burnedLines
