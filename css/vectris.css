@@ -53,6 +53,9 @@ section {
     color: red;
     cursor: pointer;
 }
+#in-game-menu li.paused {
+    color: orange;
+}
 
 #game .game-ui {
     width: 350px;

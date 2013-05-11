@@ -1,6 +1,7 @@
 var vectris = {
     burnedLines: null,
     currentBlock: null,
+    paused: false,
     grid: {
         widthInSquares: 10,
         heightInSquares: 16,
@@ -72,11 +73,21 @@ var vectris = {
             return result;
         },
         burnLines: function(lines) {
-            var removed = this.theMatrix.splice(lines[0], lines.length);
-            vectris.burnedLines += lines.length;
+            var that = this,
+                removed = null;
+            console.log(lines);
+            $.each(lines, function(index, lineNumber) {
+                //that.renderLineToBurn(lineNumber);
+                // vectris.stopGravity();
+                console.log(this.theMatrix);
+                removed = that.theMatrix.splice(lineNumber, 1);
+                console.log(removed);
+            });
+            //refill the matrix with as many lines were burned
             for (var i = 0; i < lines.length; i++) {
                 this.theMatrix.unshift(this.createRow());
             }
+            vectris.burnedLines += lines.length;
             //update score
             $('#score').html(vectris.burnedLines);
         },
@@ -108,6 +119,28 @@ var vectris = {
                 //render the block that is still free
                 $.each(block.squares, function(key, square) {
                     ctx.fillStyle = block.color;
+                    //calculate coordinates
+                    startAtX = square.x * that.getGridUnitLength();
+                    startAtY = square.y * that.getGridUnitLength();
+                    ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
+                });
+            }
+        },
+        renderLineToBurn: function(lineNumber) {
+            var that = this,
+                canvas = $('#game canvas')[0],
+                ctx = null,
+                startAtX = null,
+                startAtY = null,
+                squareSize = this.squaresLength;
+            if(!canvas.getContext) {
+                console.error('No canvas support!');
+            } else {
+                ctx = canvas.getContext('2d');
+                
+                //render the line as burned
+                $.each(this.theMatrix[lineNumber], function(cellIndex, cell) {
+                    ctx.fillStyle = 'rgb(70,10,70)';
                     //calculate coordinates
                     startAtX = square.x * that.getGridUnitLength();
                     startAtY = square.y * that.getGridUnitLength();
@@ -156,6 +189,18 @@ var vectris = {
             $(this).toggleClass('hover');
         });
         //set buttons behaviour
+        $('#btn-pause').click(function() {
+            if (that.paused) {
+                that.bindControls();
+                that.startGravity();
+                that.paused = false;
+            } else {
+                that.stopGravity();
+                that.paused = true;
+                that.unbindControls();
+            }
+            $(this).toggleClass('paused');
+        });
         $('#btn-quit').click(function() {
             that.gameOverStuff(true);
             $('#game').hide();
@@ -381,18 +426,18 @@ var vectris = {
             }
         }
     },
-    startGravity: function(time) {
+    startGravity: function() {
         this.gravity = setInterval(function(){
             vectris.move.down();
             vectris.updateGameStatusAfterMove();
-        }, time);
+        }, this.gravityDelayTime);
     },
     stopGravity: function() {
         clearInterval(this.gravity);
     },
-    resetGravity: function(time) {
+    resetGravity: function() {
         this.stopGravity();
-        this.startGravity(time);
+        this.startGravity();
     },
     bindControls: function() {
         var that = this,
@@ -407,7 +452,7 @@ var vectris = {
                 case 32: //space bar
                     eventObj.preventDefault();
                     that.move.drop();
-                    vectris.resetGravity(that.gravityDelayTime);
+                    vectris.resetGravity();
                     break;
                 case 37: //left arrow
                     eventObj.preventDefault();
@@ -424,7 +469,7 @@ var vectris = {
                 case 40: //down arrow
                     eventObj.preventDefault();
                     that.move.down();
-                    vectris.resetGravity(that.gravityDelayTime);
+                    vectris.resetGravity();
                     break;
                 default:
                     gameKeyPressed = false;
@@ -449,7 +494,7 @@ var vectris = {
         this.currentBlock = this.createBlock();
         this.grid.renderTheMatrix(this.currentBlock);
         this.bindControls();
-        this.startGravity(this.gravityDelayTime);
+        this.startGravity();
     },
     gameOverStuff: function(quit) {
         if (quit) {
