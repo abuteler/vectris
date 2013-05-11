@@ -204,6 +204,7 @@ var vectris = {
         $('#btn-quit').click(function() {
             that.gameOverStuff(true);
             $('#game').hide();
+            $('.game-over-box').hide();
             $('#main').show();
         });
     },

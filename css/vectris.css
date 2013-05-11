@@ -82,7 +82,7 @@ section {
     color: rgb(255, 255, 255);
 }
 #game .game-ui .game-over-box {
-    border: 1px solid rgb(210, 66, 66);
+    border: 4px solid rgb(210, 66, 66);
     background-color: rgb(80, 65, 200);
     width: 160px;
     height: 32px;
@@ -96,6 +96,7 @@ section {
     position: relative;
     color: white;
     font-size: 21px;
+    font-weight: bold;
     margin: 3px 0px 0px 14px;
     display: inline-block;
 }
