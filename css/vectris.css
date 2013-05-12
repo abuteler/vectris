@@ -58,7 +58,7 @@ section {
 }
 
 #game .game-ui {
-    width: 350px;
+    width: 430px;
     margin: auto;
     display: block;
     position: relative;
@@ -74,6 +74,17 @@ section {
     width: 50px;
     margin-left: 16px;
     float: left;
+}
+#game .game-ui .next-block-box {
+    /*border: 1px solid rgb(206, 138, 138);*/
+    background-color: rgb(255, 255, 255);
+    width: 120px;
+    height: 120px;
+    margin: 16px 0px 0px 16px;
+    float: left;
+}
+#game .game-ui .next-block-box canvas {
+    display: block;
 }
 #game .game-ui .score-box #score {
     font-size: 36px;

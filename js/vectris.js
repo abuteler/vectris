@@ -1,6 +1,7 @@
 var vectris = {
     burnedLines: null,
     currentBlock: null,
+    nextBlock: null,
     paused: false,
     grid: {
         widthInSquares: 10,
@@ -147,6 +148,34 @@ var vectris = {
                     ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
                 });
             }
+        },
+        renderNextBlock: function(block) {
+            var that = this,
+                canvas = $('#game .game-ui .next-block-box canvas')[0],
+                ctx = null,
+                startAtX = null,
+                startAtY = null,
+                squareSize = this.squaresLength;
+            if(!canvas.getContext) {
+                console.error('No canvas support!');
+            } else {
+                ctx = canvas.getContext('2d');
+                //set canvas dimensions
+                canvas.width = this.getGridUnitLength()*4;
+                canvas.height = this.getGridUnitLength()*6;
+                //clear the canvas
+                ctx.fillStyle = 'rgb(245,248,245)';
+                ctx.fillRect(0, 0, this.getGridUnitLength()*4, this.getGridUnitLength()*6);
+                // ctx.clearRect(0, 0, this.getGridUnitLength()*3, this.getGridUnitLength()*5);
+                //render the block
+                $.each(block.squares, function(key, square) {
+                    ctx.fillStyle = block.color;
+                    //calculate coordinates
+                    startAtX = (square.x - (that.widthInSquares/2-2) ) * that.getGridUnitLength();
+                    startAtY = (square.y + 1) * that.getGridUnitLength();
+                    ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
+                });
+            }
         }
     },
     init: function() {
@@ -249,10 +278,10 @@ var vectris = {
                 break;
             case 2:
                 //Left L
-                block.squares.push(makeSquare(startAtX, 0));
-                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX+1, 0));
+                block.squares.push(makeSquare(startAtX+1, 1));
+                block.squares.push(makeSquare(startAtX+1, 2));
                 block.squares.push(makeSquare(startAtX, 2));
-                block.squares.push(makeSquare(startAtX - 1, 2));
                 block.color = 'rgb(0,0,180)';
                 break;
             case 3:
@@ -265,10 +294,10 @@ var vectris = {
                 break;
             case 4:
                 //Left "lightning"
-                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX+1, 0));
+                block.squares.push(makeSquare(startAtX+1, 1));
                 block.squares.push(makeSquare(startAtX, 1));
-                block.squares.push(makeSquare(startAtX - 1, 1));
-                block.squares.push(makeSquare(startAtX - 1, 2));
+                block.squares.push(makeSquare(startAtX, 2));
                 block.color = 'rgb(180,0,0)';
                 break;
             case 5:
@@ -279,9 +308,6 @@ var vectris = {
                 block.squares.push(makeSquare(startAtX + 1, 2));
                 block.color = 'rgb(170,210,230)';
                 break;
-        }
-        if (this.antiCollisionSystem(block).collided) {
-            throw { block: block, error: 'oh noes!' };
         }
         return block;
     },
@@ -407,17 +433,22 @@ var vectris = {
             }
         }
     },
-    nextBlock: function() {
-        //updates the matrix with last block and creates new one, or throws error via this.createBlock();
+    switchToNextBlock: function() {
+        //updates the matrix with current block's position
         this.grid.updateTheMatrix(this.currentBlock);
-        newBlock = this.createBlock();
-        return newBlock;
+        //check whether the next block collides with previous blocks in the matrix
+        if (this.antiCollisionSystem(this.nextBlock).collided) {
+            throw { block: block, error: 'oh noes!' };
+        }
+        return this.nextBlock;
     },
     updateGameStatusAfterMove: function() {
         this.grid.renderTheMatrix(this.currentBlock);
         if (this.currentBlock.frozen) {
             try {
-                this.currentBlock = this.nextBlock();
+                this.currentBlock = this.switchToNextBlock();
+                this.nextBlock = this.createBlock();
+                this.grid.renderNextBlock(this.nextBlock);
             } catch (err) {
                 console.log(err.error);
                 this.currentBlock = err.block;
@@ -494,6 +525,8 @@ var vectris = {
         //rock and roll!
         this.currentBlock = this.createBlock();
         this.grid.renderTheMatrix(this.currentBlock);
+        this.nextBlock = this.createBlock();
+        this.grid.renderNextBlock(this.nextBlock);
         this.bindControls();
         this.startGravity();
     },
