@@ -76,13 +76,13 @@ var vectris = {
         burnLines: function(lines) {
             var that = this,
                 removed = null;
-            console.log(lines);
+            // console.log(lines);
             $.each(lines, function(index, lineNumber) {
                 //that.renderLineToBurn(lineNumber);
                 // vectris.stopGravity();
-                console.log(this.theMatrix);
+                // console.log(this.theMatrix);
                 removed = that.theMatrix.splice(lineNumber, 1);
-                console.log(removed);
+                // console.log(removed);
             });
             //refill the matrix with as many lines were burned
             for (var i = 0; i < lines.length; i++) {
@@ -438,7 +438,7 @@ var vectris = {
         this.grid.updateTheMatrix(this.currentBlock);
         //check whether the next block collides with previous blocks in the matrix
         if (this.antiCollisionSystem(this.nextBlock).collided) {
-            throw { block: block, error: 'oh noes!' };
+            throw { block: this.nextBlock, error: 'oh noes!' };
         }
         return this.nextBlock;
     },
