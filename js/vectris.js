@@ -243,7 +243,7 @@ var vectris = {
         canvas.height = this.grid.getCanvasHeight();
     },
     createBlock: function() {
-        var shape = Math.round(Math.random()*5),
+        var shape = Math.round(Math.random()*6),
             grid = this.grid,
             startAtX = (grid.widthInSquares/2 - 1),
             block = {
@@ -262,9 +262,9 @@ var vectris = {
             case 0:
                 //square
                 block.squares.push(makeSquare(startAtX, 0));
-                block.squares.push(makeSquare(startAtX + 1, 0));
+                block.squares.push(makeSquare(startAtX+1, 0));
                 block.squares.push(makeSquare(startAtX, 1));
-                block.squares.push(makeSquare(startAtX + 1, 1));
+                block.squares.push(makeSquare(startAtX+1, 1));
                 block.color = 'rgb(150,0,160)';
                 block.rotatable = false;
                 break;
@@ -289,7 +289,7 @@ var vectris = {
                 block.squares.push(makeSquare(startAtX, 0));
                 block.squares.push(makeSquare(startAtX, 1));
                 block.squares.push(makeSquare(startAtX, 2));
-                block.squares.push(makeSquare(startAtX + 1, 2));
+                block.squares.push(makeSquare(startAtX+1, 2));
                 block.color = 'rgb(210,180,0)';
                 break;
             case 4:
@@ -304,9 +304,17 @@ var vectris = {
                 //Right lightning
                 block.squares.push(makeSquare(startAtX, 0));
                 block.squares.push(makeSquare(startAtX, 1));
-                block.squares.push(makeSquare(startAtX + 1, 1));
-                block.squares.push(makeSquare(startAtX + 1, 2));
+                block.squares.push(makeSquare(startAtX+1, 1));
+                block.squares.push(makeSquare(startAtX+1, 2));
                 block.color = 'rgb(170,210,230)';
+                break;
+            case 6:
+                //tripod
+                block.squares.push(makeSquare(startAtX, 0));
+                block.squares.push(makeSquare(startAtX, 1));
+                block.squares.push(makeSquare(startAtX, 2));
+                block.squares.push(makeSquare(startAtX+1, 1));
+                block.color = 'rgb(230,0,200)';
                 break;
         }
         return block;
