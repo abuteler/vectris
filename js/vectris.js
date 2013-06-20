@@ -220,10 +220,12 @@ var vectris = {
         //set buttons behaviour
         $('#btn-pause').click(function() {
             if (that.paused) {
+                $('.paused-box').hide();
                 that.bindControls();
                 that.startGravity();
                 that.paused = false;
             } else {
+                $('.paused-box').show();
                 that.stopGravity();
                 that.paused = true;
                 that.unbindControls();

@@ -92,7 +92,7 @@ section {
     display: block;
     color: rgb(255, 255, 255);
 }
-#game .game-ui .game-over-box {
+#game .game-ui .game-over-box, #game .game-ui .paused-box {
     border: 4px solid rgb(210, 66, 66);
     background-color: rgb(80, 65, 200);
     width: 160px;
@@ -103,13 +103,19 @@ section {
     opacity: .8;
     display: none;
 }
-#game .game-ui .game-over-box span {
+#game .game-ui .paused-box {
+    background-color: rgb(255, 190, 0);
+}
+#game .game-ui .game-over-box span, #game .game-ui .paused-box span {
     position: relative;
     color: white;
     font-size: 21px;
     font-weight: bold;
     margin: 3px 0px 0px 14px;
     display: inline-block;
+}
+#game .game-ui .paused-box span {
+    margin-left: 36px;
 }
 /*-----*/
 
