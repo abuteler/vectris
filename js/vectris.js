@@ -78,19 +78,24 @@ var vectris = {
                 removed = null;
             // console.log(lines);
             $.each(lines, function(index, lineNumber) {
-                //that.renderLineToBurn(lineNumber);
-                // vectris.stopGravity();
-                // console.log(this.theMatrix);
-                removed = that.theMatrix.splice(lineNumber, 1);
-                // console.log(removed);
+                // that.renderLineToBurn(lineNumber);
+                that.paintLineToBurn(lineNumber);
+                setTimeout(function(){
+                    //remove the line from the matrix
+                    removed = that.theMatrix.splice(lineNumber, 1);
+                    //refill the matrix
+                    that.theMatrix.unshift(that.createRow());
+                    that.renderTheMatrix(vectris.currentBlock);
+                }, 300);
             });
-            //refill the matrix with as many lines were burned
-            for (var i = 0; i < lines.length; i++) {
-                this.theMatrix.unshift(this.createRow());
-            }
             vectris.burnedLines += lines.length;
             //update score
             $('#score').html(vectris.burnedLines);
+        },
+        paintLineToBurn: function(line) {
+            $.each(this.theMatrix[line], function(key, cell){
+                cell.color = 'rgb(30,10,30)';
+            });
         },
         renderTheMatrix: function(block) {
             var that = this,
@@ -127,28 +132,31 @@ var vectris = {
                 });
             }
         },
+        /* Deprecated */
         renderLineToBurn: function(lineNumber) {
             var that = this,
                 canvas = $('#game canvas')[0],
                 ctx = null,
                 startAtX = null,
                 startAtY = null,
-                squareSize = this.squaresLength;
+                squareSize = this.squaresLength
+                cellX = 0;
             if(!canvas.getContext) {
                 console.error('No canvas support!');
             } else {
                 ctx = canvas.getContext('2d');
-                
                 //render the line as burned
                 $.each(this.theMatrix[lineNumber], function(cellIndex, cell) {
                     ctx.fillStyle = 'rgb(70,10,70)';
                     //calculate coordinates
-                    startAtX = square.x * that.getGridUnitLength();
-                    startAtY = square.y * that.getGridUnitLength();
+                    startAtX = cellX * that.getGridUnitLength();
+                    startAtY = lineNumber * that.getGridUnitLength();
                     ctx.fillRect(startAtX, startAtY, squareSize, squareSize);
+                    cellX++;
                 });
             }
         },
+        /* *************** */
         renderNextBlock: function(block) {
             var that = this,
                 canvas = $('#game .game-ui .next-block-box canvas')[0],
