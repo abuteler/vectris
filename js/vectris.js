@@ -4,6 +4,7 @@ var vectris = {
     nextBlock: null,
     paused: false,
     grid: new Grid(),
+    move: new Moves(),
     init: function() {
         var section = (window.location.toString().indexOf('?') === -1) ? 'main' : 'game';
         //initialize canvas
@@ -193,9 +194,6 @@ var vectris = {
         }
         return {collided: result};
     },
-
-    move: new Moves(),
-
     switchToNextBlock: function() {
         //updates the matrix with current block's position
         this.grid.updateTheMatrix(this.currentBlock);
