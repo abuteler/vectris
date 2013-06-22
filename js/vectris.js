@@ -549,9 +549,18 @@ var vectris = {
         this.startGravity();
     },
     gameOverStuff: function(quit) {
+        var paused = $('#btn-pause').hasClass('paused')
+        
         if (quit) {
             this.burnedLines = null;
             $('#score').html(0);
+            this.stopGravity();
+            //reset pause if it was on when quit
+            if (paused) {
+                this.paused = false;
+                $('.paused-box').hide();
+                $('#btn-pause').toggleClass('paused');
+            }
         }
         this.stopGravity();
         this.unbindControls();
