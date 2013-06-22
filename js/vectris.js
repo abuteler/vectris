@@ -5,6 +5,7 @@ var vectris = {
     paused: false,
     grid: new Grid(),
     move: new Moves(),
+    gravity: new Gravity(),
     init: function() {
         var section = (window.location.toString().indexOf('?') === -1) ? 'main' : 'game';
         //initialize canvas
@@ -49,11 +50,11 @@ var vectris = {
             if (that.paused) {
                 $('.paused-box').hide();
                 that.bindControls();
-                that.startGravity();
+                that.gravity.start();
                 that.paused = false;
             } else {
                 $('.paused-box').show();
-                that.stopGravity();
+                that.gravity.stop();
                 that.paused = true;
                 that.unbindControls();
             }
@@ -219,19 +220,6 @@ var vectris = {
             }
         }
     },
-    startGravity: function() {
-        this.gravity = setInterval(function(){
-            vectris.move.down();
-            vectris.updateGameStatusAfterMove();
-        }, this.gravityDelayTime);
-    },
-    stopGravity: function() {
-        clearInterval(this.gravity);
-    },
-    resetGravity: function() {
-        this.stopGravity();
-        this.startGravity();
-    },
     bindControls: function() {
         var that = this,
             gameKeyPressed = null;
@@ -245,7 +233,7 @@ var vectris = {
                 case 32: //space bar
                     eventObj.preventDefault();
                     that.move.drop();
-                    vectris.resetGravity();
+                    vectris.gravity.reset();
                     break;
                 case 37: //left arrow
                     eventObj.preventDefault();
@@ -262,7 +250,7 @@ var vectris = {
                 case 40: //down arrow
                     eventObj.preventDefault();
                     that.move.down();
-                    vectris.resetGravity();
+                    vectris.gravity.reset();
                     break;
                 default:
                     gameKeyPressed = false;
@@ -281,7 +269,7 @@ var vectris = {
         this.grid.initializeTheMatrix();
         //initialize burnedLines
         this.burnedLines = 0;
-        this.gravityDelayTime = 700; //@2Do: implement handicap and progressive difficulty
+        this.gravity.delayTime = 700; //@2Do: implement handicap and progressive difficulty
 
         //rock and roll!
         this.currentBlock = this.createBlock();
@@ -289,7 +277,7 @@ var vectris = {
         this.nextBlock = this.createBlock();
         this.grid.renderNextBlock(this.nextBlock);
         this.bindControls();
-        this.startGravity();
+        this.gravity.start();
     },
     gameOverStuff: function(quit) {
         var paused = $('#btn-pause').hasClass('paused')
@@ -297,7 +285,7 @@ var vectris = {
         if (quit) {
             this.burnedLines = null;
             $('#score').html(0);
-            this.stopGravity();
+            this.gravity.stop();
             //reset pause if it was on when quit
             if (paused) {
                 this.paused = false;
@@ -305,7 +293,7 @@ var vectris = {
                 $('#btn-pause').toggleClass('paused');
             }
         }
-        this.stopGravity();
+        this.gravity.stop();
         this.unbindControls();
         $('.game-over-box').show();
     }
