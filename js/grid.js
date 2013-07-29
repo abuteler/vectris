@@ -49,6 +49,12 @@ Grid.prototype.updateTheMatrix = function(block) {
             linesToCheck.push(square.y);
         }
     });
+    
+    /* This line fixes a bug were a line was set to burn, 
+    get colored, but wouldn't get erased */
+    linesToCheck.sort(function(a,b){return a - b;});
+    /* credit to Douglas Crockford for fixing the sort method */ 
+
     linesToBurn = this.getLinesCompleted(linesToCheck);
     if (linesToBurn.length > 0) {
         this.burnLines(linesToBurn);
@@ -81,7 +87,6 @@ Grid.prototype.isLineComplete = function(line){
 Grid.prototype.burnLines = function(lines) {
     var that = this,
         removed = null;
-    // console.log(lines);
     $.each(lines, function(index, lineNumber) {
         // that.renderLineToBurn(lineNumber);
         that.paintLineToBurn(lineNumber);
