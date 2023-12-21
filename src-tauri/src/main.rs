@@ -4,12 +4,24 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+  format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+use tauri::SystemTray;
+use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
+
 fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+  let quit:CustomMenuItem = CustomMenuItem::new("quit".to_string(), "Quit");
+  let hide:CustomMenuItem = CustomMenuItem::new("hide".to_string(), "Hide");
+  let tray_menu:SystemTrayMenu = SystemTrayMenu::new()
+    .add_item(quit)
+    .add_native_item(SystemTrayMenuItem::Separator)
+    .add_item(hide);
+  let tray:SystemTray = SystemTray::new().with_menu(tray_menu);
+
+  tauri::Builder::default()
+    .system_tray(tray)
+    .invoke_handler(tauri::generate_handler![greet])
+    .run(tauri::generate_context!())
+    .expect("error while running tauri application");
 }
