@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
+mod vectris;
+use vectris::Vectris;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
@@ -15,8 +18,11 @@ struct GreetArgs<'a> {
     name: &'a str,
 }
 
+
 #[component]
 pub fn App() -> impl IntoView {
+    let vectris:Vectris = Vectris::new();
+
     let (name, set_name) = create_signal(String::new());
     let (greet_msg, set_greet_msg) = create_signal(String::new());
 
