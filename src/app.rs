@@ -5,7 +5,7 @@ use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
 mod vectris;
-use vectris::Vectris;
+use vectris::{Vectris, controller::Controller};
 
 #[wasm_bindgen]
 extern "C" {
@@ -18,11 +18,10 @@ struct GreetArgs<'a> {
     name: &'a str,
 }
 
-
 #[component]
 pub fn App() -> impl IntoView {
-    let vectris:Vectris = Vectris::new();
-
+    let vectris = Vectris::new();
+    vectris.on_key_up();
     let (name, set_name) = create_signal(String::new());
     let (greet_msg, set_greet_msg) = create_signal(String::new());
 
