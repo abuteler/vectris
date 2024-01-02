@@ -1,9 +1,9 @@
 pub mod controller;
-use controller::Controller;
+use controller::Controls;
 mod model;
 use model::gamestate::GameState;
 mod view;
-use view::View;
+use view::Renderer;
 
 pub const CELLS_PER_ROW: u8 = 10;
 pub const CELLS_PER_COL: u8 = 16;
@@ -18,9 +18,10 @@ impl Vectris {
             state: GameState::new(),
         }
     }
+    // Add render fn as needed here?
 }
 
-impl Controller for Vectris {
+impl Controls for Vectris {
     fn on_key_up(&self) {
         println!("{} on_key_up", 1)
     }
@@ -30,4 +31,8 @@ impl Controller for Vectris {
     fn on_key_left(&self) {
         println!("{} on_key_left", 1)
     }
+}
+
+impl Renderer for Vectris {
+
 }
