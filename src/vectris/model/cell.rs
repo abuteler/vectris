@@ -1,3 +1,4 @@
+#[derive(Copy, Clone, Debug)]
 pub enum Color {
     Violet,
     Green,
@@ -10,7 +11,6 @@ pub enum Color {
 impl Color {
     pub fn as_str(&self) -> &'static str {
         match self {
-            // should I dereference self? aka `*self`
             Color::Violet => "rgb(150,0,160)",
             Color::Green => "rgb(0,150,0)",
             Color::Blue => "rgb(0,0,180)",
@@ -22,11 +22,13 @@ impl Color {
     }
 }
 
+#[derive(Copy, Clone, Debug, Default)]
 pub struct Cell {
-    coordinates: (u8, u8),
-    is_vacant: bool,
-    color: Option<Color>,
+    pub coordinates: (u8, u8),
+    pub is_vacant: bool,
+    pub color: Option<Color>,
 }
+
 impl Cell {
     pub fn new(x: u8, y: u8, is_vacant: bool, color: Option<Color>) -> Self {
         Self {

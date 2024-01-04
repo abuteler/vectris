@@ -1,17 +1,15 @@
-use super::cell::Cell;
-use super::color::Color;
+use super::{Cell, Color, CELLS_PER_ROW};
 
+#[derive(Copy, Clone, Debug, Default)]
 pub struct Shape {
-    cells: [Cell; 4],
+    pub cells: [Cell; 4],
 }
-
-use super::CELLS_PER_ROW;
-use rand::prelude::*;
 
 impl Shape {
     pub fn new() -> Self {
+        use rand::prelude::*;
         // randomize a number between 1 and 7
-        let num: u8 = rand::thread_rng().gen_range(1, 7);
+        let num: u8 = rand::thread_rng().gen_range(1..7);
         let x: u8 = CELLS_PER_ROW / 2;
         match num {
             // Square
