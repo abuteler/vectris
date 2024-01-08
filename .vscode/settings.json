@@ -1,0 +1,6 @@
+{
+  "emmet.includeLanguages": {
+    "rust": "html"
+  },
+  "editor.tabSize": 2
+}
