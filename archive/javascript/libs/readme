@@ -1,0 +1,6 @@
+Important!
+This implementation leans on a (very old - 2012! - 1.8.3) version of jQuery.
+At the time I decided to include it's minified version in the repo, so that the game would be readily playable just by cloning the repo.
+Now, for indexing reasons (Github parses this repo and measures the amount of code present of every programming language used across all files), I've decided to rename the file extension of this library, to try and avoid getting it computed as code of my own.
+If you read this, and for any reason would like to play this version of the game, please rename the file with filename `jquery-1.8.3.min.txt` to `jquery-1.8.3.min.js`.
+Glhf!
